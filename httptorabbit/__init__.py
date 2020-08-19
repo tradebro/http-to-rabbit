@@ -19,8 +19,8 @@ async def webhook_handler(request: Request) -> HTTPResponse:
     channel = await conn.channel()
     await channel.declare_queue(name=AMQP_QUEUE,
                                 auto_delete=True)
-    exchange = channel.declare_exchange(name=AMQP_ORDERS_EXCHANGE,
-                                        type=aio_pika.ExchangeType.FANOUT)
+    exchange = await channel.declare_exchange(name=AMQP_ORDERS_EXCHANGE,
+                                              type=aio_pika.ExchangeType.FANOUT)
 
     amqp_message = aio_pika.Message(body=ujson.dumps(request.json).encode())
     await exchange.publish(message=amqp_message,
