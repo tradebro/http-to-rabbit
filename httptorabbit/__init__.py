@@ -9,6 +9,7 @@ import ujson
 
 AMQP_CONN_STRING = environ.get('AMQP_CONN_STRING')
 AMQP_QUEUE = environ.get('AMQP_QUEUE')
+AMQP_ORDERS_EXCHANGE = environ.get('AMQP_ORDERS_EXCHANGE')
 
 
 async def webhook_handler(request: Request) -> HTTPResponse:
@@ -18,10 +19,12 @@ async def webhook_handler(request: Request) -> HTTPResponse:
     channel = await conn.channel()
     await channel.declare_queue(name=AMQP_QUEUE,
                                 auto_delete=True)
+    exchange = channel.declare_exchange(name=AMQP_ORDERS_EXCHANGE,
+                                        type=aio_pika.ExchangeType.FANOUT)
 
     amqp_message = aio_pika.Message(body=ujson.dumps(request.json).encode())
-    await channel.default_exchange.publish(message=amqp_message,
-                                           routing_key=AMQP_QUEUE)
+    await exchange.publish(message=amqp_message,
+                           routing_key=AMQP_QUEUE)
     logger.debug('Message is published to queue')
 
     return text('ok')

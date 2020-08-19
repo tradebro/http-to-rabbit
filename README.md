@@ -11,3 +11,4 @@ This is a generic RabbitMQ publisher taking HTTP requests.
 | `APP_DEBUG` | 0 or 1, enabling will print debug logs |
 | `AMQP_CONN_STRING` | Required string |
 | `AMQP_QUEUE` | Required string, also known as routing key |
+| `AMQP_ORDERS_EXCHANGE` | Required string |
